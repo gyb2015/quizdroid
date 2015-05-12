@@ -8,6 +8,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,47 +21,47 @@ import android.widget.TextView;
 
 
 public class Overview extends ActionBarActivity {
-    public static Qmaster q;
-    public static int Qcount;
-    public static int numcorrect;
-    public static int totalq;
-    public static String[] quest;
-    public static boolean correct;
-    public static String answ;
+    public static int currentQuestion;
+    public static int correctAnswer;
     public static Intent launchedMe;
-
-
+    public static String answer;
+    public static int numcorrect;
+    public static int totalQuestions;
+    public static String chosen;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_overview);
+
         launchedMe = getIntent();
-        String title =  launchedMe.getStringExtra("title");
-        q = (Qmaster) launchedMe.getSerializableExtra("questions");
-        totalq = launchedMe.getIntExtra("total", 10);
-        String desc = launchedMe.getStringExtra("desc");
-        numcorrect = launchedMe.getIntExtra("correct", 0);
+        int number =  launchedMe.getIntExtra("title", 100);
+        QuizApp quizzer = QuizApp.getInstance();
+        quizzer.setCurrentTopic(number);
+        totalQuestions = quizzer.getQuestion().size();
+        currentQuestion = quizzer.getCurrentQuestion();
+        Log.i("current Question1", ""+currentQuestion);
+        Log.i("current Question2", ""+quizzer.getCurrentQuestion());
 
         TextView title1 = (TextView) findViewById(R.id.textView);
-        title1.setText(title);
+        title1.setText(quizzer.getTitle());
         TextView description = (TextView) findViewById(R.id.textView2);
-        description.setText(desc);
+        description.setText(quizzer.getLongd());
         TextView numberq = (TextView) findViewById(R.id.textView8);
-        numberq.setText("Questions in Topic: " + totalq);
+        numberq.setText("Question(s) in Topic:" + totalQuestions);
 
         //button to next frag
         Button btn = (Button) findViewById(R.id.button);
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Button b = (Button) v.findViewById(R.id.button);
-                b.setVisibility(v.INVISIBLE);
-                FragmentManager fm = getSupportFragmentManager();
-                FragmentTransaction ft = fm.beginTransaction();
-                ft.replace(R.id.topicid, new Question());
-                ft.commit();
+            Button b = (Button) v.findViewById(R.id.button);
+            b.setVisibility(v.INVISIBLE);
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.topicid, new Question());
+            ft.commit();
             }
 
         });
@@ -91,6 +92,7 @@ public class Overview extends ActionBarActivity {
 
     public class Question extends Fragment {
         public View view;
+        public QuizApp quizzer;
 
         public Question() {
 
@@ -99,25 +101,29 @@ public class Overview extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
             view = inflater.inflate(R.layout.fragment_question, container, false);
+            quizzer = QuizApp.getInstance();
 
-            launchedMe = getIntent();
-            Qcount = launchedMe.getIntExtra("number", 1);
-            quest = q.getAnswers(Qcount);
+            correctAnswer = quizzer.getQuestion().get(currentQuestion).getCorr();
+            answer = quizzer.getQuestion().get(currentQuestion).getAnswers().get(correctAnswer);
 
             TextView question = (TextView) view.findViewById(R.id.textView6);
-            question.setText(quest[0]);
+            question.setText(quizzer.getQuestion().get(currentQuestion).getQuestion());
+            Log.i("question", quizzer.getQuestion().get(currentQuestion).getQuestion());
             TextView num = (TextView) view.findViewById(R.id.textView7);
-            num.setText("Quesion " + Qcount);
+            currentQuestion++;
+            num.setText("Quesion " + currentQuestion);
+            currentQuestion--;
 
             //Radio group set text
             RadioGroup radioGroup = (RadioGroup) view.findViewById(R.id.radiogroup);
             int rad = radioGroup.getChildCount();
-            for (int i = 1; i <= rad; i++) {
-                View o = radioGroup.getChildAt(i - 1);
-                if (o instanceof RadioButton) {
 
+            for (int i = 0; i <= rad - 1; i++) {
+                View o = radioGroup.getChildAt(i);
+                if (o instanceof RadioButton) {
                     RadioButton radioBtn =  (RadioButton)o;
-                    radioBtn.setText(quest[i]);
+                    radioBtn.setText(quizzer.getQuestion().get(currentQuestion).getAnswers().get(i));
+
                 }
             }
 
@@ -129,14 +135,17 @@ public class Overview extends ActionBarActivity {
                     Button b = (Button) view.findViewById(R.id.button3);
                     b.setVisibility(view.VISIBLE);
                     RadioButton radio = (RadioButton) view.findViewById(checkedId);
-                    answ = radio.getText().toString();
-                    if(answ.equals(quest[quest.length - 1]) ) {
-                        correct = true;
+                    chosen = radio.getText().toString();
+                    Log.i("Chosen", chosen);
+                    Log.i("correctAnser", answer);
+                    Log.i("Beforeif numCorrect", ""+numcorrect);
+                    if(chosen.equals(answer)) {
                         numcorrect++;
-                    } else {
-                        correct = false;
                     }
-
+                    Log.i("Afterif numCorrect", ""+numcorrect);
+                    currentQuestion++;
+                    quizzer.setCurrentQuestion(currentQuestion);
+                    currentQuestion--;
                 }
             });
 
@@ -160,26 +169,33 @@ public class Overview extends ActionBarActivity {
         public class Summary extends Fragment {
             public Button b;
             public View view;
+            public QuizApp quizzer;
 
             public Summary() {
 
             }
-
+            
             @Override
             public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
                 view = inflater.inflate(R.layout.fragment_summary, container, false);
+                quizzer = QuizApp.getInstance();
 
                 TextView ans = (TextView) view.findViewById(R.id.textView4);
-                ans.setText("You have chosen: " + answ);
+                ans.setText("You have chosen: " + chosen);
                 TextView numcorr = (TextView) view.findViewById(R.id.textView5);
+                currentQuestion++;
+                numcorr.setText("You have " + numcorrect + " out of " + currentQuestion + " correct");
+                currentQuestion--;
 
-                numcorr.setText("You have " + numcorrect + " out of " + Qcount + " correct");
                 TextView rightnum = (TextView) view.findViewById(R.id.textView9);
-                rightnum.setText("Correct Answer: " + quest[quest.length - 1]);
+                rightnum.setText("Correct Answer: " + answer);
                 b = (Button) view.findViewById(R.id.button2);
-                if(Qcount == totalq) {
+                Log.i("currentQ ", ""+currentQuestion);
+                currentQuestion++;
+                if(currentQuestion == totalQuestions) {
                     b.setText("Finish");
                 }
+
                 b.setOnClickListener(new View.OnClickListener() {
                     FragmentManager fm = getFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
@@ -188,23 +204,20 @@ public class Overview extends ActionBarActivity {
                     @Override
                     public void onClick(View v) {
                         if(b.getText().toString().equals("Next")) {
+
                             Button b = (Button) v.findViewById(R.id.button2);
                             b.setVisibility(v.INVISIBLE);
-                            launchedMe.putExtra("number", 2);
                             ft.replace(R.id.summary_id, new Question());
                             ft.commit();
                         } else {
-                            launchedMe.putExtra("correct", 0);
+                            quizzer.setCurrentQuestion(0);
+                            numcorrect = 0;
                             Intent nextActivity = new Intent(getActivity(), Topics.class);
                             startActivity(nextActivity); // opens a new activity
                         }
                     }
                 });
-
-
                 return view;
-
-
             }
 
         }

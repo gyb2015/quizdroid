@@ -14,9 +14,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Topic"
         android:id="@+id/textView"
+        android:layout_marginTop="88dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="157dp" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -24,7 +24,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Description"
         android:id="@+id/textView2"
-        android:layout_centerVertical="true"
+        android:layout_marginTop="36dp"
+        android:layout_below="@+id/textView8"
         android:layout_centerHorizontal="true" />
 
     <Button
@@ -32,9 +33,9 @@
         android:layout_height="wrap_content"
         android:text="Begin"
         android:id="@+id/button"
+        android:layout_marginTop="61dp"
         android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="51dp" />
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,5 +44,7 @@
         android:text="numq"
         android:id="@+id/textView8"
         android:layout_below="@+id/textView"
-        android:layout_centerHorizontal="true" />
+        android:layout_marginTop="31dp"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView" />
 </RelativeLayout>
