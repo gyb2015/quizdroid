@@ -4,6 +4,8 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.provider.Settings;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -29,16 +31,42 @@ public class Preferences extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 EditText link = (EditText) findViewById(R.id.url);
-                String url = link.getText().toString();
+                String url = "http://tednewardsandbox.site44.com/questions.json";
+                //link.getText().toString();
 
-                alarmIntent.putExtra("url", url);
-                pendingIntent = PendingIntent.getBroadcast(Preferences.this, 0, alarmIntent, 0);
-                start();
+                ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
 
+                //For 3G check
+                boolean is3g = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE)
+                        .isConnectedOrConnecting();
+
+                //For WiFi Check
+                boolean isWifi = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)
+                        .isConnectedOrConnecting();
+
+                System.out.println(is3g + " net " + isWifi);
+
+                if (!is3g && !isWifi)
+                {
+                    Toast.makeText(getApplicationContext(),"Please make sure your Network Connection is ON ",Toast.LENGTH_LONG).show();
+                } else if(isAirplaneModeOn(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "Ariplane mode is on", Toast.LENGTH_SHORT).show();
+                    Intent AirIntent = new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                    AirIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(AirIntent);
+
+                } else {
+                    alarmIntent.putExtra("url", url);
+
+
+                    pendingIntent = PendingIntent.getBroadcast(Preferences.this, 0, alarmIntent, 0);
+                    start();
+                }
             }
         });
 
     }
+
 
 
     @Override
@@ -85,5 +113,11 @@ public class Preferences extends ActionBarActivity {
         AlarmManager manager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
         manager.cancel(pendingIntent);
         Toast.makeText(this, "Alarm Canceled", Toast.LENGTH_SHORT).show();
+    }
+    private static boolean isAirplaneModeOn(Context context) {
+
+        return Settings.System.getInt(context.getContentResolver(),
+                Settings.System.AIRPLANE_MODE_ON, 0) != 0;
+
     }
 }
