@@ -144,11 +144,11 @@ public class Overview extends ActionBarActivity {
                     chosen = radio.getText().toString();
                     Log.i("Chosen", chosen);
                     Log.i("correctAnser", answer);
-                    Log.i("Beforeif numCorrect", ""+numcorrect);
-                    if(chosen.equals(answer)) {
+                    Log.i("Beforeif numCorrect", "" + numcorrect);
+                    if (chosen.equals(answer)) {
                         numcorrect++;
                     }
-                    Log.i("Afterif numCorrect", ""+numcorrect);
+                    Log.i("Afterif numCorrect", "" + numcorrect);
                     currentQuestion++;
                     quizzer.setCurrentQuestion(currentQuestion);
                     currentQuestion--;

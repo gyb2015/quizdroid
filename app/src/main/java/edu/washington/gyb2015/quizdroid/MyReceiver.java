@@ -41,7 +41,7 @@ public class MyReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        String url = intent.getStringExtra("url");
+        String url = intent.getStringExtra("Enter URL Here");
 
         DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
         request.setTitle("Quiz");

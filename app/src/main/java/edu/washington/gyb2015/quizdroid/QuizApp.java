@@ -48,6 +48,22 @@ public class QuizApp extends Application implements TopicRepository {
 
         String json = null;
 
+        // Fetch data.json in assets/ folder
+        try {
+            InputStream inputStream = getAssets().open("question.json");
+            json = readJSONFile(inputStream);
+
+            JSONObject jsonData = new JSONObject(json);
+
+            String questionString = jsonData.getString("question");
+            int food = jsonData.getInt("food");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
             //Questions
             ArrayList<Question> mathq = getMath();
             a.setQuestion(mathq);
