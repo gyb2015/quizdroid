@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
-public class Summary extends ActionBarActivity {
+public class SummaryActivity extends ActionBarActivity {
     public int total = 0;
 
     @Override
@@ -71,7 +71,7 @@ public class Summary extends ActionBarActivity {
         Intent launchedMe = getIntent();
         String qnums = launchedMe.getStringExtra("number");
         if (qnums.equals("1")) {
-            Intent nextActivity = new Intent(Summary.this, Question.class);
+            Intent nextActivity = new Intent(SummaryActivity.this, QuestionActivity.class);
             nextActivity.putExtra("Questnum", "Question 2");
             nextActivity.putExtra("tscore", total++);
             if (launchedMe.getStringExtra("Questvar").equals("What is 1 + 1 =")) {
@@ -100,7 +100,7 @@ public class Summary extends ActionBarActivity {
 
             finish(); // kill this instance self (this activity)
         } else {
-            Intent nextActivity = new Intent(Summary.this, MainActivity.class);
+            Intent nextActivity = new Intent(SummaryActivity.this, MainActivity.class);
             if (nextActivity.resolveActivity(getPackageManager()) != null) {
                 startActivity(nextActivity); // opens a new activity
             }

@@ -13,7 +13,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 
 
-public class Question extends ActionBarActivity {
+public class QuestionActivity extends ActionBarActivity {
     public int number = 1;
     public int checking = 0;
     public int total = 0;
@@ -74,7 +74,7 @@ public class Question extends ActionBarActivity {
 
     public void chosen(View view) {
         // Is the button now checked?
-        Intent nextActivity = new Intent(Question.this, Summary.class);
+        Intent nextActivity = new Intent(QuestionActivity.this, SummaryActivity.class);
         Intent launchedMe = getIntent();
         if(launchedMe.getStringExtra("Questnum").equals("Question 1")) {
             nextActivity.putExtra("number", "1");

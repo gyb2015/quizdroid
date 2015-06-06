@@ -10,7 +10,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 
-public class TopicSummary extends ActionBarActivity {
+public class TopicSummaryActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +58,7 @@ public class TopicSummary extends ActionBarActivity {
     }
 
     public void beginquiz(View view) {
-        Intent nextActivity = new Intent(TopicSummary.this, Question.class); // cannot use just this cuz this refers to the listener, not the outer this
+        Intent nextActivity = new Intent(TopicSummaryActivity.this, QuestionActivity.class); // cannot use just this cuz this refers to the listener, not the outer this
         Intent launchedMe = getIntent();
         // add data to be passed to next activity
         nextActivity.putExtra("Questnum", "Question 1");
